@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .chart-container, .stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        canvas {
+            max-width: 250px;
+            max-height: 250px;
+        }
+        .message {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-width: 180px;
+        }
+        .stat-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>System Resource Monitor</h1>
+
+    <div class="chart-container">
+        <div>
+            <h3>CPU Usage</h3>
+            <canvas id="cpuChart"></canvas>
+        </div>
+        <div>
+            <h3>Memory Usage</h3>
+            <canvas id="memChart"></canvas>
+        </div>
+        <div>
+            <h3>Disk Usage</h3>
+            <canvas id="diskChart"></canvas>
+        </div>
+        <div>
+            <h3>Swap Usage</h3>
+            <canvas id="swapChart"></canvas>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-title">CPU Cores</div>
+            <div>{{ cpu_cores }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Uptime (Secs)</div>
+            <div>{{ uptime | round(0) }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Running Processes</div>
+            <div>{{ process_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Bytes Sent</div>
+            <div>{{ bytes_sent }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Bytes Received</div>
+            <div>{{ bytes_recv }}</div>
+        </div>
+    </div>
+
+    {% if message %}
+    <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <script>
+        const cpuData = {
+            labels: ['Used', 'Free'],
+            datasets: [{
+                data: [{{ cpu_percent }}, {{ 100 - cpu_percent }}],
+                backgroundColor: ['#ff6384', '#36a2eb']
+            }]
+        };
+        const memData = {
+            labels: ['Used', 'Free'],
+            datasets: [{
+                data: [{{ mem_percent }}, {{ 100 - mem_percent }}],
+                backgroundColor: ['#ffcd56', '#4bc0c0']
+            }]
+        };
+        const diskData = {
+            labels: ['Used', 'Free'],
+            datasets: [{
+                data: [{{ disk_percent }}, {{ 100 - disk_percent }}],
+                backgroundColor: ['#9966ff', '#ff9f40']
+            }]
+        };
+        const swapData = {
+            labels: ['Used', 'Free'],
+            datasets: [{
+                data: [{{ swap_percent }}, {{ 100 - swap_percent }}],
+                backgroundColor: ['#00c49f', '#ff4444']
+            }]
+        };
+
+        new Chart(document.getElementById('cpuChart'), { type: 'pie', data: cpuData });
+        new Chart(document.getElementById('memChart'), { type: 'pie', data: memData });
+        new Chart(document.getElementById('diskChart'), { type: 'pie', data: diskData });
+        new Chart(document.getElementById('swapChart'), { type: 'pie', data: swapData });
+    </script>
+</body>
+</html>
